@@ -29,29 +29,31 @@ impl Pass {
 
     fn from_string(string: String) -> Result<Pass, io::Error> {
         if string.len() != 10 {
-            Err(io::Error::new(io::ErrorKind::InvalidData, "expect 10 characters in a pass"))
+            Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "expect 10 characters in a pass",
+            ))
         } else {
             let (row_str, col_str) = string.split_at(7);
-            let row = row_str.chars().fold((0, 127), |(min, max), ch| {
-                match ch {
-                    'F' => get_lower_half(min, max),
-                    'B' => get_upper_half(min, max),
-                    _ => unimplemented!(),
-                }
-            }).0;
+            let row = row_str
+                .chars()
+                .try_fold((0, 127), |(min, max), ch| match ch {
+                    'F' => Ok(get_lower_half(min, max)),
+                    'B' => Ok(get_upper_half(min, max)),
+                    _ => Err(io::Error::new(io::ErrorKind::InvalidData, "bad character")),
+                })?
+                .0;
 
-            let col = col_str.chars().fold((0, 8), |(min, max), ch| {
-                match ch {
-                    'L' => get_lower_half(min, max),
-                    'R' => get_upper_half(min, max),
-                    _ => unimplemented!(),
-                }
-            }).0;
+            let col = col_str
+                .chars()
+                .try_fold((0, 8), |(min, max), ch| match ch {
+                    'L' => Ok(get_lower_half(min, max)),
+                    'R' => Ok(get_upper_half(min, max)),
+                    _ => Err(io::Error::new(io::ErrorKind::InvalidData, "bad character")),
+                })?
+                .0;
 
-            Ok(Pass {
-                row,
-                col,
-            })
+            Ok(Pass { row, col })
         }
     }
 
