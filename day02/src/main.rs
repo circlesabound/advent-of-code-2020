@@ -13,10 +13,14 @@ fn main() {
         }
 
         let mut matching = 0;
-        if policy.password.chars().collect::<Vec<char>>()[policy.num1 - 1] == policy.character.chars().collect::<Vec<char>>()[0] {
+        if policy.password.chars().collect::<Vec<char>>()[policy.num1 - 1]
+            == policy.character.chars().collect::<Vec<char>>()[0]
+        {
             matching += 1;
         }
-        if policy.password.chars().collect::<Vec<char>>()[policy.num2 - 1] == policy.character.chars().collect::<Vec<char>>()[0] {
+        if policy.password.chars().collect::<Vec<char>>()[policy.num2 - 1]
+            == policy.character.chars().collect::<Vec<char>>()[0]
+        {
             matching += 1;
         }
         if matching == 1 {

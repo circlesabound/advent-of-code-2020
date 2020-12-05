@@ -2,15 +2,15 @@ use std::io::{self, BufRead};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let map = Map::read_from_stdin()?;
-    
+
     println!("part 1: {}", simulate_slope(&map, 3, 1));
     println!(
         "part 2: {}",
-        simulate_slope(&map, 1, 1) *
-        simulate_slope(&map, 3, 1) *
-        simulate_slope(&map, 5, 1) *
-        simulate_slope(&map, 7, 1) *
-        simulate_slope(&map, 1, 2),
+        simulate_slope(&map, 1, 1)
+            * simulate_slope(&map, 3, 1)
+            * simulate_slope(&map, 5, 1)
+            * simulate_slope(&map, 7, 1)
+            * simulate_slope(&map, 1, 2),
     );
 
     Ok(())
@@ -43,7 +43,7 @@ enum Tile {
 }
 
 struct Map {
-    grid: Vec<Vec<Tile>>
+    grid: Vec<Vec<Tile>>,
 }
 
 impl Map {
@@ -67,9 +67,12 @@ impl Map {
                 match c {
                     '.' => row.push(Tile::Open),
                     '#' => row.push(Tile::Tree),
-                    other => return Err(io::Error::new(
-                        io::ErrorKind::InvalidData, 
-                        format!("Expected '.' or '#' in input data, got {}", other))),
+                    other => {
+                        return Err(io::Error::new(
+                            io::ErrorKind::InvalidData,
+                            format!("Expected '.' or '#' in input data, got {}", other),
+                        ))
+                    }
                 }
             }
 
@@ -85,8 +88,6 @@ impl Map {
             grid.push(row);
         }
 
-        Ok(Map {
-            grid,
-        })
+        Ok(Map { grid })
     }
 }

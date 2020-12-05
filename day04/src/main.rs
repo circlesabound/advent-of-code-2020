@@ -22,11 +22,13 @@ fn read_from_stdin() -> Result<Vec<Passport>, io::Error> {
             match PassportField::try_from(field_str) {
                 Some(field) => {
                     current_passport.as_mut().unwrap().add_field(field);
-                },
-                None => return Err(io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    "bad passport field",
-                )),
+                }
+                None => {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "bad passport field",
+                    ))
+                }
             }
         }
     }
@@ -35,8 +37,6 @@ fn read_from_stdin() -> Result<Vec<Passport>, io::Error> {
 
     Ok(passports)
 }
-
-
 
 struct Passport {
     birth_year: bool,
@@ -93,22 +93,7 @@ impl Passport {
             }
             PassportField::HairColour(val) => {
                 let hair_colour_chars = vec![
-                    '0',
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    'a',
-                    'b',
-                    'c',
-                    'd',
-                    'e',
-                    'f',
+                    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
                 ];
                 if val.len() == 7 {
                     if let Some(val) = val.strip_prefix('#') {
@@ -117,32 +102,24 @@ impl Passport {
                 }
             }
             PassportField::EyeColour(val) => {
-                let eye_colours = vec![
-                    "amb",
-                    "blu",
-                    "brn",
-                    "gry",
-                    "grn",
-                    "hzl",
-                    "oth"
-                ];
+                let eye_colours = vec!["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
                 self.eye_colour = eye_colours.contains(&val.as_str());
             }
             PassportField::PassportId(val) => {
                 self.passport_id = val.len() == 9 && val.parse::<u32>().is_ok()
             }
-            PassportField::CountryId(val) => self.country_id = true,
+            PassportField::CountryId(_) => self.country_id = true,
         }
     }
 
     fn is_valid(&self) -> bool {
-        self.birth_year &&
-        self.issue_year &&
-        self.expiration_year &&
-        self.height &&
-        self.hair_colour &&
-        self.eye_colour &&
-        self.passport_id
+        self.birth_year
+            && self.issue_year
+            && self.expiration_year
+            && self.height
+            && self.hair_colour
+            && self.eye_colour
+            && self.passport_id
     }
 }
 
@@ -161,14 +138,30 @@ impl PassportField {
     fn try_from(input: &str) -> Option<PassportField> {
         let spl = input.split_at(3);
         match spl.0 {
-            "byr" => Some(PassportField::BirthYear(spl.1.trim_start_matches(':').to_owned())),
-            "iyr" => Some(PassportField::IssueYear(spl.1.trim_start_matches(':').to_owned())),
-            "eyr" => Some(PassportField::ExpirationYear(spl.1.trim_start_matches(':').to_owned())),
-            "hgt" => Some(PassportField::Height(spl.1.trim_start_matches(':').to_owned())),
-            "hcl" => Some(PassportField::HairColour(spl.1.trim_start_matches(':').to_owned())),
-            "ecl" => Some(PassportField::EyeColour(spl.1.trim_start_matches(':').to_owned())),
-            "pid" => Some(PassportField::PassportId(spl.1.trim_start_matches(':').to_owned())),
-            "cid" => Some(PassportField::CountryId(spl.1.trim_start_matches(':').to_owned())),
+            "byr" => Some(PassportField::BirthYear(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "iyr" => Some(PassportField::IssueYear(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "eyr" => Some(PassportField::ExpirationYear(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "hgt" => Some(PassportField::Height(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "hcl" => Some(PassportField::HairColour(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "ecl" => Some(PassportField::EyeColour(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "pid" => Some(PassportField::PassportId(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
+            "cid" => Some(PassportField::CountryId(
+                spl.1.trim_start_matches(':').to_owned(),
+            )),
             _ => None,
         }
     }
